@@ -35,6 +35,10 @@ export default class CodeEmbed extends Plugin {
 						: `Embed code: No path '${filename}'`;
 				}
 
+				if (rows[1]) {language = rows[1].trim()
+				console.log("language", language)
+				}
+
 				if (!file && !fileExt) language = "blank"; // to stabilize error-block when editing
 				markdown = "```" + language;
 				markdown += "\n";
