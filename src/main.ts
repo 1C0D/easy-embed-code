@@ -27,13 +27,31 @@ export default class CodeEmbed extends Plugin {
 				const markdownView =
 					this.app.workspace.getActiveViewOfType(MarkdownView);
 				const editor = markdownView?.editor;
+
+				let extension = "";
 				if (codeBlockStart && editor) {
-					const [_,extension] = editor
+					let title = "";
+					const [...rest] = editor
 						.getLine(codeBlockStart)
 						.split(" ")
-					if (extension) {
-						console.log("extension", extension)
-						language = extension}
+						.slice(1);
+					console.log("rest", rest);
+
+					if (rest.length > 0 && rest[0].startsWith('"')) {
+						title = rest.join(" ").slice(1, -1);
+					} else {
+						extension = rest[0];
+						console.log("extension", extension);
+						if (rest.length > 1) {
+							title = rest.slice(1).join(" ");
+						}
+					}
+					if (title) {
+						const pre = el.createEl("pre");
+						const code = pre.createEl("code");
+						const titleEl = code.createEl("div", { text: title });
+						el.insertBefore(titleEl, el.firstChild);
+					}
 				}
 
 				const file: TAbstractFile | null =
@@ -42,6 +60,11 @@ export default class CodeEmbed extends Plugin {
 				let fileContents = "";
 				let fileExt = "";
 				let markdown = "";
+				if (extension) {
+					language = extension;
+					
+
+				}
 
 				if (!file) {
 					fileContents = await this.extPath(filename);
